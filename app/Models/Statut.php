@@ -9,4 +9,9 @@ class Statut extends Model
     protected $fillable = [
         'nom',
     ];
+
+    public function profils()
+    {
+        return $this->hasMany(Profil::class);
+    }
 }

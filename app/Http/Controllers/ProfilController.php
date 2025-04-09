@@ -12,37 +12,18 @@ class ProfilController extends Controller
      */
     public function index()
     {
-        //
-    }
+        $profiles = Profil::whereHas('statut', function($query) {
+            $query->where('nom', 'like', 'actif');
+        })->select('nom', 'prenom', 'image', 'created_at', 'updated_at')
+        ->get();
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        return response()->json($profiles);
     }
 
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Profil $profil)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Profil $profil)
     {
         //
     }
