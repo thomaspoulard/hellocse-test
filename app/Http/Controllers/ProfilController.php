@@ -100,6 +100,8 @@ class ProfilController extends Controller
      */
     public function destroy(Profil $profil)
     {
-        //
+        $profil->delete();
+
+        return response('Le profil a été supprimé.', 200);
     }
 }
