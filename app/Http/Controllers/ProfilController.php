@@ -62,9 +62,9 @@ class ProfilController extends Controller
 
         $profil = Profil::create($validated);
 
-        //TODO: Handle local image storage or base64 here
+        //TODO: Handle local image storage or base64 here with an external and reusable method
 
-        return response()->json($profil);
+        return response()->json($profil, 201);
     }
 
     /**
@@ -72,7 +72,7 @@ class ProfilController extends Controller
      */
     public function update(Request $request, Profil $profil)
     {
-        //
+        //TODO (Bonus): FormRequest Validation to ensure all the fields value changed
     }
 
     /**
