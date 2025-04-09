@@ -56,7 +56,7 @@ class ProfilController extends Controller
         } catch (ValidationException $e) {
             return response()->json([
                 'errors' => $e->errors(),
-                'message' => 'Validation failed',
+                'message' => 'La validation des champs a échoué.',
             ], 422);
         }
 
