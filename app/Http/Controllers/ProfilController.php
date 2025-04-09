@@ -27,7 +27,7 @@ class ProfilController extends Controller
 
         //TODO: Handle auth status to see the "statut" field
 
-        return response()->json($profiles);
+        return response()->json($profiles, 200);
     }
 
     /**
@@ -69,14 +69,34 @@ class ProfilController extends Controller
 
     /**
      * Update the specified resource in storage.
+     *
+     * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Profil $profil)
     {
-        //TODO (Bonus): FormRequest Validation to ensure all the fields value changed
+        $validated = $request->validate([
+            'nom' => 'sometimes|string|max:255',
+            'prenom' => 'sometimes|string|max:255',
+            'image' => 'sometimes|image|mimes:jpg,png,jpeg,gif,svg',
+            'statut_id' => 'sometimes|integer|exists:statuts,id',
+        ]);
+
+        // Handle cases when the updated value is the same as the initial value; Skip API call and output unprocessable content error
+        if (!$profil->isDirty()) {
+            return response()->json([
+                'message' => 'Aucune modification détectée.',
+            ], 422);
+        }
+
+        $profil->update($validated);
+
+        return response()->json($profil, 200);
     }
 
     /**
      * Remove the specified resource from storage.
+     *
+     * @return \Illuminate\Http\Response
      */
     public function destroy(Profil $profil)
     {
