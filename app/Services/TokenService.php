@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Models\Administrateur;
 use Carbon\Carbon;
 use Laravel\Sanctum\NewAccessToken;
-use Laravel\Sanctum\PersonalAccessToken;
 
 class TokenService {
 
