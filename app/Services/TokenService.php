@@ -29,7 +29,7 @@ class TokenService {
         $mostRecentAccessToken = $admin?->tokens()->orderBy('expires_at', 'desc')->first();
 
         // Handle case when access token is expired and must be renewed
-        if ($mostRecentAccessToken->expires_at < now()) {
+        if ($mostRecentAccessToken?->expires_at < now()) {
             return $this->createNewToken($admin);
         }
 
