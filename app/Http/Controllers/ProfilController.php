@@ -80,6 +80,7 @@ class ProfilController extends Controller
             'statut_id' => 'sometimes|integer|exists:statuts,id',
         ]);
 
+        $profil->fill($validated);
         // Handle cases when the updated value is the same as the initial value; Skip API call and output unprocessable content error
         if (!$profil->isDirty()) {
             return response()->json([
