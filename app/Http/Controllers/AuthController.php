@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Administrateur;
 use App\Services\TokenService;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
@@ -22,10 +23,9 @@ class AuthController extends Controller
      * Register an admin into the database.
      *
      * @param \Illuminate\Http\Request
-     *
      * @return \Illuminate\Http\Response
      */
-    public function register(Request $request)
+    public function register(Request $request): Response
     {
         $admin = new Administrateur;
 
@@ -36,7 +36,7 @@ class AuthController extends Controller
             ]);
 
         } catch (ValidationException $e) {
-            return response()->json([
+            return response([
                 'errors' => $e->errors(),
                 'message' => 'La validation des champs a échoué.',
             ], 422);
@@ -49,7 +49,7 @@ class AuthController extends Controller
 
         $token = $this->tokenService->createNewToken($admin);
 
-        return response()->json([
+        return response([
             'email' => $admin->email,
             'access_token' => $token->plainTextToken
         ], 200);
@@ -59,10 +59,10 @@ class AuthController extends Controller
      * Authenticate an admin and grants authorization to use the private API endpoints.
      *
      * @param \Illuminate\Http\Request
-     *
      * @return \Illuminate\Http\Response
      */
-    public function login(Request $request) {
+    public function login(Request $request): Response
+    {
         try {
             $validated = $request->validate([
                 'email' => 'required|email|exists:administrateurs',
@@ -75,14 +75,14 @@ class AuthController extends Controller
                 Hash::check($validated['password'], $admin->password);
             }
         } catch (ValidationException $e) {
-            return response()->json([
+            return response([
                 'message' => 'L\'authentification a échoué.',
             ], 422);
         }
 
         $accessToken = $this->tokenService->findOrUpdateToken($admin);
 
-        return response()->json([
+        return response([
             'email' => $admin->email,
             'access_token' => $accessToken->plainTextToken
         ], 200);

@@ -14,10 +14,9 @@ class TokenService {
      *
      * @param Administrateur $admin
      * @return \Laravel\Sanctum\NewAccessToken
-    */
+     */
     public function createNewToken(Administrateur $admin): NewAccessToken {
         $accessToken = $admin->createToken('authToken', expiresAt: Carbon::now()->addMinutes(2));
-
         return $accessToken;
     }
 
@@ -25,8 +24,8 @@ class TokenService {
      * Generate a new token for the given admin
      *
      * @param Administrateur $admin
-    *  @return \Laravel\Sanctum\NewAccessToken
-    */
+     * @return \Laravel\Sanctum\NewAccessToken
+     */
     public function findOrUpdateToken(Administrateur $admin): NewAccessToken {
         $mostRecentAccessToken = $admin?->tokens()->orderBy('expires_at', 'desc')->first();
 

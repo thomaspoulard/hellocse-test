@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Profil;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
 
 class ProfilController extends Controller
@@ -13,7 +14,7 @@ class ProfilController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(): Response
     {
         $profiles = Profil::whereHas('statut', function ($query) {
             $query->where('nom', 'like', 'actif');
@@ -21,17 +22,18 @@ class ProfilController extends Controller
             ->get();
 
         if ($profiles->isEmpty()) {
-            return response()->json(['message' => 'Il n\'y a aucun profil actif actuellement.'], 404);
+            return response(['message' => 'Il n\'y a aucun profil actif actuellement.'], 404);
         }
 
         //TODO: Handle auth status to see the "statut" field
 
-        return response()->json($profiles, 200);
+        return response($profiles, 200);
     }
 
     /**
      * Store a newly created resource in storage.
      *
+     * @param Illuminate\Http\Request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -69,9 +71,11 @@ class ProfilController extends Controller
     /**
      * Update the specified resource in storage.
      *
+     * @param Illuminate\Http\Request
+     * @param \App\Models\Profil
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Profil $profil)
+    public function update(Request $request, Profil $profil): Response
     {
         $validated = $request->validate([
             'nom' => 'sometimes|string|max:255',
@@ -83,22 +87,23 @@ class ProfilController extends Controller
         $profil->fill($validated);
         // Handle cases when the updated value is the same as the initial value; Skip API call and output unprocessable content error
         if (!$profil->isDirty()) {
-            return response()->json([
+            return response([
                 'message' => 'Aucune modification détectée.',
             ], 422);
         }
 
         $profil->update($validated);
 
-        return response()->json($profil, 200);
+        return response($profil, 200);
     }
 
     /**
      * Remove the specified resource from storage.
      *
+     * @param \App\Models\Profil
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Profil $profil)
+    public function destroy(Profil $profil): Response
     {
         $profil->delete();
 
