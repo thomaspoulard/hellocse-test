@@ -1,0 +1,38 @@
+<?php
+
+namespace App\Services;
+
+use App\Models\Administrateur;
+use Carbon\Carbon;
+use Laravel\Sanctum\NewAccessToken;
+
+class TokenService {
+
+    /**
+     * Generate a new token for the given admin
+     *
+     * @param Administrateur $admin
+     * @return \Laravel\Sanctum\NewAccessToken
+    */
+    public function createNewToken(Administrateur $admin): NewAccessToken {
+        $accessToken = $admin->createToken('authToken', expiresAt: Carbon::now()->addMinutes(2));
+
+        return $accessToken;
+    }
+
+    /**
+     * Generate a new token for the given admin
+     *
+     * @param Administrateur $admin
+     * @return \Laravel\Sanctum\NewAccessToken
+    */
+    public function findOrUpdateToken(Administrateur $admin): NewAccessToken {
+        if ($admin->currentAccessToken()->expires_at < now()) {
+            dd('hello');
+            return $this->createNewToken($admin);
+        }
+
+        return $admin->tokens()->first();
+    }
+}
+
