@@ -71,9 +71,12 @@ class AuthController extends Controller
 
             $admin = Administrateur::where('email', $request['email'])->first();
 
-            if($admin) {
-                Hash::check($validated['password'], $admin->password);
+            if ($admin && !Hash::check($validated['password'], $admin->password)) {
+                return response([
+                    'message' => 'L\'authentification a échoué.',
+                ], 422);
             }
+
         } catch (ValidationException $e) {
             return response([
                 'message' => 'L\'authentification a échoué.',
@@ -84,7 +87,7 @@ class AuthController extends Controller
 
         return response([
             'email' => $admin->email,
-            'access_token' => $accessToken->plainTextToken
+            'access_token' => $accessToken->plainTextToken,
         ], 200);
     }
 }

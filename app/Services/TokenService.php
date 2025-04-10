@@ -25,16 +25,19 @@ class TokenService {
      * @param Administrateur $admin
      * @return \Laravel\Sanctum\NewAccessToken
      */
-    public function findOrUpdateToken(Administrateur $admin): NewAccessToken {
-        $mostRecentAccessToken = $admin?->tokens()->orderBy('expires_at', 'desc')->first();
+    public function findOrUpdateToken(Administrateur $admin): NewAccessToken
+    {
+        $mostRecentAccessToken = $admin->tokens()->orderBy('created_at', 'desc')->first();
 
-        // Handle case when access token is expired and must be renewed
-        if ($mostRecentAccessToken?->expires_at < now()) {
-            return $this->createNewToken($admin);
+        // Handle case when access token is already stored and not expired
+        if ($mostRecentAccessToken && $mostRecentAccessToken->expires_at && $mostRecentAccessToken->expires_at > now()) {
+            // Standardize response to always be a NewAccessToken
+            return new NewAccessToken($mostRecentAccessToken, $mostRecentAccessToken->token);
         }
 
-        // Standardize response to always be a NewAccessToken
-        return new NewAccessToken($mostRecentAccessToken, $mostRecentAccessToken->token);
+        // Handle case when access token is expired and must be renewed
+        $mostRecentAccessToken?->delete();
+        return $this->createNewToken($admin);
     }
 }
 
