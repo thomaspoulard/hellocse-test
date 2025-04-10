@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Administrateur;
 use Carbon\Carbon;
 use Laravel\Sanctum\NewAccessToken;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class TokenService {
 
@@ -24,15 +25,18 @@ class TokenService {
      * Generate a new token for the given admin
      *
      * @param Administrateur $admin
-     * @return \Laravel\Sanctum\NewAccessToken
+    *  @return \Laravel\Sanctum\NewAccessToken
     */
     public function findOrUpdateToken(Administrateur $admin): NewAccessToken {
-        if ($admin->currentAccessToken()->expires_at < now()) {
-            dd('hello');
+        $mostRecentAccessToken = $admin?->tokens()->orderBy('expires_at', 'desc')->first();
+
+        // Handle case when access token is expired and must be renewed
+        if ($mostRecentAccessToken->expires_at < now()) {
             return $this->createNewToken($admin);
         }
 
-        return $admin->tokens()->first();
+        // Standardize response to always be a NewAccessToken
+        return new NewAccessToken($mostRecentAccessToken, $mostRecentAccessToken->token);
     }
 }
 
