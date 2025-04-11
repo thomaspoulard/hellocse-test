@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Profil;
+use App\Services\FileService;
 use App\Services\TokenService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -14,8 +15,10 @@ class ProfilController extends Controller
     // Dependency injection of TokenService for token management
     public function __construct(
         protected TokenService $tokenService,
+        protected FileService $fileService
     ) {
         $this->tokenService = $tokenService;
+        $this->fileService = $fileService;
     }
 
     /**
@@ -58,7 +61,6 @@ class ProfilController extends Controller
                     'required',
                     'image',
                     'mimes:jpg,png,jpeg,gif,svg',
-                    'max:2048'
                 ],
                 'statut_id' => [
                     'required',
@@ -73,9 +75,9 @@ class ProfilController extends Controller
             ], 422);
         }
 
-        $profil = Profil::create($validated);
+        $validated['image'] = $this->fileService->storeFile($request)->getData()->image_url;
 
-        //TODO: Handle local image storage or base64 here with an external and reusable method
+        $profil = Profil::create($validated);
 
         return response()->json($profil, 201);
     }
