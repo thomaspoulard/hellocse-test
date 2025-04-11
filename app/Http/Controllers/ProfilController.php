@@ -29,14 +29,15 @@ class ProfilController extends Controller
             $q->where('nom', 'actif');
         })->select('id', 'nom', 'prenom');
 
+        // Handle case when there are no active profiles
         if ($profiles->get()->isEmpty()) {
             return response(['message' => 'Il n\'y a aucun profil actif actuellement.'], 404);
         }
 
+        // Handle case when admin is requesting the profiles
         if(auth()?->check()) {
             return response($profiles->select('id', 'nom', 'prenom', 'statut_id')->with(['statut:id,nom'])->get(), 200);
         }
-
 
         return response($profiles->get(), 200);
     }
