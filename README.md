@@ -19,6 +19,16 @@
 
 `php artisan key:generate`
 
+`php artisan db:seed`
+
+`php artisan storage:link` for local file storage
+
+# Important .env variables to fill
+
+`APP_URL=` and `APP_PORT=` for local file storage and file url generation
+
+`DB_USERNAME=` and `DB_PASSWORD=`
+
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
