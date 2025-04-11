@@ -14,5 +14,6 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call(StatutSeeder::class);
+        $this->call(ProfilSeeder::class); // ProfilSeeder is called after Statut's to avoid foreign key error
     }
 }
