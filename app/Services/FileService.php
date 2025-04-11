@@ -34,14 +34,24 @@ class FileService {
         }
     }
 
-	/**
-	 * Generate unique file name with an uuid
+    /**
+	 * Generate a uuid
      * @return string
 	 */
-	public function uniqueMediaName($file): string
+	public function generateUuid(): string
+	{
+        return Str::uuid();
+	}
+
+	/**
+	 * Generate unique file name with an uuid
+     * @param UploadedFile $file
+     * @return string
+	 */
+	public function uniqueMediaName(UploadedFile $file): string
 	{
 		$extension = $file->getClientOriginalExtension();
-        return Str::uuid() . '.' . $extension;
+        return $this->generateUuid() . '.' . $extension;
 	}
 
     /**
