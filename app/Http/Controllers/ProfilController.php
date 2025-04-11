@@ -75,7 +75,7 @@ class ProfilController extends Controller
             ], 422);
         }
 
-        $validated['image'] = $this->fileService->storeFile($request)->getData()->image_url;
+        $validated['image'] = $this->fileService->storeFile($request)->getData()->file_url;
 
         $profil = Profil::create($validated);
 
@@ -98,13 +98,16 @@ class ProfilController extends Controller
             'statut_id' => 'sometimes|integer|exists:statuts,id',
         ]);
 
-        $profil->fill($validated);
-        // Handle cases when the updated value is the same as the initial value; Skip API call and output unprocessable content error
+        // Handle cases when the updated value is the same as the initial value; early return
         if (!$profil->isDirty()) {
             return response([
                 'message' => 'Aucune modification détectée.',
             ], 422);
         }
+
+        $validated['image'] = $this->fileService->findAndReplaceProfilFile($request, $profil)->getData()->file_url;
+
+        $profil->fill($validated);
 
         $profil->update($validated);
 

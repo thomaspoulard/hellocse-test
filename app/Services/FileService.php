@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Profil;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
@@ -10,7 +11,7 @@ use Illuminate\Support\Facades\Storage;
 class FileService {
 
     /**
-     * Store incoming image locally
+     * Store incoming file locally
      *
      * @param Request $request
      * @return Illuminate\Http\JsonResponse;
@@ -24,9 +25,9 @@ class FileService {
 				$disk = Storage::disk('public');
 				$uniqueFilename = $this->uniqueMediaName($file, $folder, $disk);
 				$path = $file->storeAs($folder, $uniqueFilename, 'public');
-				$imageUrl = $disk->url($path);
+				$fileUrl = $disk->url($path);
                 return response()->json([
-                    'image_url' => $imageUrl
+                    'file_url' => $fileUrl
                 ], 201);
             } else{
 				return response()->json(['Erreur' => 'L\'image est obligatoire'], 400);
@@ -56,16 +57,29 @@ class FileService {
 	}
 
     /**
-     * Delete and replace the requested image upon profile modification
+     * Find and replace local file for incoming profile
      *
+     * @param Request $request
      * @param Profil $profil
-     * @return Illuminate\Http\RedirectResponse
+     * @return Illuminate\Http\JsonResponse;
      */
-    /*
-    public function updateProfileImage(Profil $profil): RedirectResponse {
-        //TODO: Update profile image function
-        return true;
+    public function findAndReplaceProfilFile(Request $request, Profil $profil): JsonResponse {
+        $oldFile = pathinfo($profil->image)['basename'];
+        $newFileUrl = '';
+
+        try {
+            $newFileUrl = $this->storeFile($request)->getData()->file_url;
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'L\'image n\'a pas pu être remplacée.',
+            ], 422);
+        }
+
+        Storage::delete($oldFile);
+
+        return response()->json([
+            'file_url' => $newFileUrl
+        ], 201);
     }
-    */
 }
 
