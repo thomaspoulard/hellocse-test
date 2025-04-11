@@ -23,7 +23,7 @@
 
 `php artisan storage:link` for local file storage
 
-# Important .env variables to fill
+## Important .env variables to fill
 
 `APP_URL=` and `APP_PORT=` for local file storage and file url generation
 
