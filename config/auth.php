@@ -14,8 +14,8 @@ return [
     */
 
     'defaults' => [
-        'guard' => env('AUTH_GUARD', 'web'),
-        'passwords' => env('AUTH_PASSWORD_BROKER', 'users'),
+        'guard' => 'sanctum',
+        'passwords' => 'administrateurs',
     ],
 
     /*
@@ -60,11 +60,6 @@ return [
     */
 
     'providers' => [
-        'users' => [
-            'driver' => 'eloquent',
-            'model' => App\Models\User::class,
-        ],
-
         'administrateurs' => [
             'driver' => 'eloquent',
             'model' => App\Models\Administrateur::class,

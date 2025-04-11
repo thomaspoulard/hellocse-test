@@ -11,7 +11,11 @@ Route::prefix('v1')->group(function () {
     });
 
     Route::group(['prefix' => 'profiles', 'as' => 'profiles.'], function () {
-        Route::get('/', [ProfilController::class, 'index'])->name('index');
+        // Optional auth middleware in order to still be able to access the current authed user data in controller
+        Route::middleware('optional_auth')->group(function () {
+            Route::get('/', [ProfilController::class, 'index'])->name('index');
+        });
+        // Admin routes guarded with sanctum access token
         Route::middleware('auth:sanctum')->group(function () {
             Route::post('/create', [ProfilController::class, 'store'])->name('store');
             Route::post('/{profil}', [ProfilController::class, 'update'])->name('update');

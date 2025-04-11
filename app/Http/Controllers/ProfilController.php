@@ -3,31 +3,42 @@
 namespace App\Http\Controllers;
 
 use App\Models\Profil;
+use App\Services\TokenService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
 
 class ProfilController extends Controller
 {
+
+    // Dependency injection of TokenService for token management
+    public function __construct(
+        protected TokenService $tokenService,
+    ) {
+        $this->tokenService = $tokenService;
+    }
+
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(): Response
+    public function index(Request $request): Response
     {
-        $profiles = Profil::whereHas('statut', function ($query) {
-            $query->where('nom', 'like', 'actif');
-        })->select('nom', 'prenom', 'image', 'created_at', 'updated_at')
-            ->get();
+        $profiles = Profil::whereHas('statut', function ($q) {
+            $q->where('nom', 'actif');
+        })->select('id', 'nom', 'prenom');
 
-        if ($profiles->isEmpty()) {
+        if ($profiles->get()->isEmpty()) {
             return response(['message' => 'Il n\'y a aucun profil actif actuellement.'], 404);
         }
 
-        //TODO: Handle auth status to see the "statut" field
+        if(auth()?->check()) {
+            return response($profiles->select('id', 'nom', 'prenom', 'statut_id')->with(['statut:id,nom'])->get(), 200);
+        }
 
-        return response($profiles, 200);
+
+        return response($profiles->get(), 200);
     }
 
     /**
