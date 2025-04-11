@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class FileService {
 
@@ -33,23 +34,24 @@ class FileService {
         }
     }
 
-	/**
-	 * Generate unique file name
+    /**
+	 * Generate a uuid
+     * @return string
 	 */
-	public function uniqueMediaName($file, $folder, $disk)
+	public function generateUuid(): string
 	{
-        // Replace spaces with underscores to avoid errors
-		$filename = str_replace(' ', '_', $file->getClientOriginalName());
-		$extension = $file->getClientOriginalExtension();
+        return Str::uuid();
+	}
 
-		$i = 1;
-		$basename = basename($filename, '.' . $extension);
-		$output = $folder.'/'.$filename;
-		while($disk->exists($output)){
-			$output = $folder .'/'. $basename .'-'. $i . '.' . $extension;
-			$i++;
-		}
-		return basename($output);
+	/**
+	 * Generate unique file name with an uuid
+     * @param UploadedFile $file
+     * @return string
+	 */
+	public function uniqueMediaName(UploadedFile $file): string
+	{
+		$extension = $file->getClientOriginalExtension();
+        return $this->generateUuid() . '.' . $extension;
 	}
 
     /**

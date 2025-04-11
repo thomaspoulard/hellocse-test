@@ -26,7 +26,7 @@ class ProfilController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request): Response
+    public function index(): Response
     {
         $profiles = Profil::whereHas('statut', function ($q) {
             $q->where('nom', 'actif');
