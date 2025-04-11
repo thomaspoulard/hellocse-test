@@ -99,15 +99,18 @@ class ProfilController extends Controller
         ]);
 
         // Handle cases when the updated value is the same as the initial value; early return
-        if (!$profil->isDirty()) {
+        if ($profil->isDirty()) {
             return response([
                 'message' => 'Aucune modification détectée.',
             ], 422);
         }
 
-        $validated['image'] = $this->fileService->findAndReplaceProfilFile($request->file('image'), $profil)->getData()->file_url;
+        // Verify if the image changed
+        if(isset($validated['image'])) {
+            $validated['image'] = $this->fileService->findAndReplaceProfilFile($request->file('image'), $profil)->getData()->file_url;
+            $profil->fill($validated);
+        }
 
-        $profil->fill($validated);
 
         $profil->update($validated);
 
