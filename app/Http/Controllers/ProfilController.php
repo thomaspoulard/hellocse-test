@@ -75,7 +75,7 @@ class ProfilController extends Controller
             ], 422);
         }
 
-        $validated['image'] = $this->fileService->storeFile($request)->getData()->file_url;
+        $validated['image'] = $this->fileService->storeFile($request->file('image'))->getData()->file_url;
 
         $profil = Profil::create($validated);
 
@@ -105,7 +105,7 @@ class ProfilController extends Controller
             ], 422);
         }
 
-        $validated['image'] = $this->fileService->findAndReplaceProfilFile($request, $profil)->getData()->file_url;
+        $validated['image'] = $this->fileService->findAndReplaceProfilFile($request->file('image'), $profil)->getData()->file_url;
 
         $profil->fill($validated);
 
